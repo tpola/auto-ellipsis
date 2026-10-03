@@ -1,0 +1,15 @@
+{
+  "article": "Auto Ellipsis",
+  "author": "Thomas Polaert",
+  "published": "2009-06-20",
+  "codeproject_article_id": 37503,
+  "historical_article_url": "http://www.codeproject.com/Articles/37503/Auto-Ellipsis",
+  "historical_source_zip": "http://www.codeproject.com/KB/cs/AutoEllipsis/AutoEllipsis_src.zip",
+  "wayback_snapshot": "https://web.archive.org/web/20150608184821/http://www.codeproject.com/Articles/37503/Auto-Ellipsis",
+  "reconstruction": {
+    "Ellipsis.cs": "high confidence reconstruction from code fragments printed in archived article",
+    "LabelEllipsis.cs": "functional reconstruction from article/demo description",
+    "TextBoxEllipsis.cs": "functional reconstruction from article/demo description",
+    "MainForm.cs": "new archival demo preserving documented behaviors"
+  }
+}
