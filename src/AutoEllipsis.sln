@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoEllipsis", "AutoEllipsis\AutoEllipsis.csproj", "{92C6A292-28C8-4FDD-922E-6484C7E9A450}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {92C6A292-28C8-4FDD-922E-6484C7E9A450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {92C6A292-28C8-4FDD-922E-6484C7E9A450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {92C6A292-28C8-4FDD-922E-6484C7E9A450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {92C6A292-28C8-4FDD-922E-6484C7E9A450}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
+EndGlobal
