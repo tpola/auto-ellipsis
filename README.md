@@ -33,6 +33,8 @@ The text below is converted from the archived CodeProject HTML so that the artic
 
 ---
 
+![Auto Ellipsis demo](assets/AutoEllipsis1.png)
+
 - [Download source and demo - 19.54 KB](https://web.archive.org/web/20150608184821/http://www.codeproject.com/KB/cs/AutoEllipsis/AutoEllipsis_src.zip)
 
 ## Introduction
@@ -101,6 +103,8 @@ public enum EllipsisFormat
 The `Ellipsis` class can be used to implement flexible auto ellipsis on various Windows Form controls. I provided two examples in the demo project, one for `Label` control, one for `TextBox` control.
 
 The `TextBoxEllipsis` switches to "full text" mode when it gains focus so its content can be edited as usual. It switches back to "ellipsis" mode when it loses focus.
+
+![TextBoxEllipsis context menu and ellipsis options](assets/AutoEllipsis2.png)
 
 ## Inside the code
 
