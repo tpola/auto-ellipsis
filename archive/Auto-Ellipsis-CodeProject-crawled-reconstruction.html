@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Auto Ellipsis - CodeProject (crawled copy reconstruction)</title>
+<meta name="author" content="Thomas Polaert">
+<meta name="description" content='Add "Auto Ellipsis" feature to any Windows Form control'>
+<meta name="archive-provenance" content="Reconstructed from parsed crawl metadata plus author-supplied Wayback HTML">
+<style>
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+  color: #222;
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 24px 60px;
+}
+h1, h2, h3 { color: #333; }
+h1 { font-size: 2.1rem; margin-bottom: .4rem; }
+.archive-note {
+  background: #fff7d6;
+  border: 1px solid #d8c47a;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+}
+.metadata {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+}
+.metadata p { margin: 4px 0; }
+pre {
+  background: #f7f2d8;
+  border: 1px solid #e3d79b;
+  padding: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+code { font-family: Consolas, "Courier New", monospace; }
+img { max-width: 100%; height: auto; }
+ul.download {
+  padding-left: 20px;
+}
+a { color: #075985; }
+footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #ccc;
+  font-size: .9rem;
+  color: #666;
+}
+</style>
+</head>
+<body>
+
+<div class="archive-note">
+  <strong>Archive note.</strong>
+  This file is a reconstructed HTML representation of the CodeProject page as exposed by
+  a web crawl reported as <em>Crawled: 1.1 years ago</em>. The crawler interface exposes
+  parsed page content rather than the original raw cached HTML bytes. The full article body
+  below is preserved from the author's Wayback HTML snapshot and paired with metadata from
+  the later crawl.
+</div>
+
+
+<section class="metadata">
+  <h1>Auto Ellipsis</h1>
+  <p><strong>Author:</strong> Thomas Polaert</p>
+  <p><strong>Published:</strong> Jun 20, 2009</p>
+  <p><strong>License:</strong> CPOL</p>
+  <p><strong>Rating:</strong> 4.93/5 (53 votes)</p>
+  <p><strong>Reading time:</strong> 3 min</p>
+  <p><strong>Views in crawled copy:</strong> 481,637</p>
+  <p><strong>Downloads in crawled copy:</strong> 1,990</p>
+  <p><strong>Historical source download:</strong>
+     http://www.codeproject.com/KB/cs/AutoEllipsis/AutoEllipsis_src.zip
+  </p>
+  <p><strong>Historical article URL:</strong>
+     http://www.codeproject.com/Articles/37503/Auto-Ellipsis
+  </p>
+</section>
+
+<main>
+<div class="text" id="contentdiv" itemprop="articleBody">
+<ul class="download">
+<li><a href="https://web.archive.org/web/20150608184821/http://www.codeproject.com/KB/cs/AutoEllipsis/AutoEllipsis_src.zip">Download source and demo - 19.54 KB</a></li>
+</ul>
+<img alt="demo" height="260" src="./Auto Ellipsis - CodeProject_files/AutoEllipsis1.PNG" width="633"/>
+<h2>Introduction</h2>
+<p>Why yet another ellipsis control, when the .NET Framework already provides several built-in options to achieve this task? <code>System.Windows.Forms.Label</code> control comes with an <code>AutoEllipsis</code> property. <code>System.Drawing.Graphics.DrawString</code> or <code>System.Windows.Forms.TextRenderer.DrawText</code> offer a reliable way to make text fit into predefined boundaries. Just have a look at <code>StringTrimming</code> or <code>TextFormatFlags</code> enumeration! Not to mention <code>PathCompactPath</code> API from <em>shlwapi.dll</em> or Static control styles <code>SS_ENDELLIPSIS</code> and <code>SS_PATHELLIPSIS</code>.</p>
+<p>Unfortunately, the built-in auto ellipsis controls provide no flexibility at all for ellipsis alignment. The text is always trimmed off at the end the <code><span class="code-SDKkeyword">string</span></code>. This might be an issue, such as in the following example:</p>
+<div class="pre-action-link" id="premain913375" style="width:100%;display:block;"><span id="prehide913375" onclick="processCodeBlocks.togglePre(913375);">Hide</span>    <span onclick="return processCodeBlocks.copyCode(913375);">Copy Code</span></div><pre id="pre913375" lang="text" style="margin-top: 0px;">C:\Documents and Settings\TPOL\My Documents\Visual Studio 2005\
+				Projects\MyProject1\Program.cs
+C:\Documents and Settings\TPOL\My Documents\Visual Studio 2005\
+				Projects\MyProject2\Program.cs</pre>
+<p>The built-in auto ellipsis controls display paths as follows:</p>
+<div class="pre-action-link" id="premain507412" style="width:100%;display:block;"><span id="prehide507412" onclick="processCodeBlocks.togglePre(507412);">Hide</span>    <span onclick="return processCodeBlocks.copyCode(507412);">Copy Code</span></div><pre id="pre507412" lang="text" style="margin-top: 0px;">C:\Documents and Settings\TPOL\My Documents\Visual...\Program.cs
+C:\Documents and Settings\TPOL\My Documents\Visual...\Program.cs</pre>
+<p>It would be helpful to keep the last part of the path as it is more significant in this case.</p>
+<div class="pre-action-link" id="premain647488" style="width:100%;display:block;"><span id="prehide647488" onclick="processCodeBlocks.togglePre(647488);">Hide</span>    <span onclick="return processCodeBlocks.copyCode(647488);">Copy Code</span></div><pre id="pre647488" lang="text" style="margin-top: 0px;">C:\...Documents\Visual Studio 2005\Projects\MyProject1\Program.cs
+C:\...Documents\Visual Studio 2005\Projects\MyProject2\Program.cs</pre>
+<p>By the way, Visual Studio 2005 behaves like this in the "File/Recent Files" menu.</p>
+<h2>Using the Code</h2>
+<p>This is why I came up with the <code>Ellipsis</code> class. It is a <code><span class="code-keyword">static</span> </code>class with a single method:</p>
+<div class="pre-action-link" id="premain497184" style="width:100%;display:block;"><span id="prehide497184" onclick="processCodeBlocks.togglePre(497184);">Hide</span>    <span onclick="return processCodeBlocks.copyCode(497184);">Copy Code</span></div><pre id="pre497184" lang="cs" style="margin-top: 0px;"><span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">string</span> Compact(<span class="code-keyword">string</span> text, Control ctrl, EllipsisFormat options)</pre>
+<p>The <code>Compact</code> function trims off argument <code>text</code> to make it fit into <code>ctrl</code> boundaries. <code>EllipsisFormat</code> enumeration is defined as follows:</p>
+<div class="pre-action-link" id="premain516376" style="width:100%;display:block;"><span id="prehide516376" onclick="processCodeBlocks.togglePre(516376);">Hide</span>    <span onclick="return processCodeBlocks.copyCode(516376);">Copy Code</span></div><pre id="pre516376" lang="cs" style="margin-top: 0px;">[Flags]
+<span class="code-keyword">public</span> <span class="code-keyword">enum</span> EllipsisFormat
+{
+	<span class="code-comment">//</span><span class="code-comment"> Text is not modified.
+</span>	None = <span class="code-digit">0</span>,
+	<span class="code-comment">//</span><span class="code-comment"> Text is trimmed at the end of the string. An ellipsis (...) 
+</span>	<span class="code-comment">//</span><span class="code-comment"> is drawn in place of remaining text.
+</span>	End = <span class="code-digit">1</span>,
+	<span class="code-comment">//</span><span class="code-comment"> Text is trimmed at the beginning of the string. 
+</span>	<span class="code-comment">//</span><span class="code-comment"> An ellipsis (...) is drawn in place of remaining text. 
+</span>	Start = <span class="code-digit">2</span>,
+	<span class="code-comment">//</span><span class="code-comment"> Text is trimmed in the middle of the string. 
+</span>	<span class="code-comment">//</span><span class="code-comment"> An ellipsis (...) is drawn in place of remaining text.
+</span>	Middle = <span class="code-digit">3</span>,
+	<span class="code-comment">//</span><span class="code-comment"> Preserve as much as possible of the drive and filename information. 
+</span>	<span class="code-comment">//</span><span class="code-comment"> Must be combined with alignment information.
+</span>	Path = <span class="code-digit">4</span>,
+	<span class="code-comment">//</span><span class="code-comment"> Text is trimmed at a word boundary. 
+</span>	<span class="code-comment">//</span><span class="code-comment"> Must be combined with alignment information.
+</span>	Word = <span class="code-digit">8</span>
+}</pre>
+<p>The <code>Ellipsis</code> class can be used to implement flexible auto ellipsis on various Windows Form controls. I provided two examples in the demo project, one for <code>Label</code> control, one for <code>TextBox</code> control.</p>
+<img alt="TextBoxEllipsis" border="0" height="300" hspace="0" src="./Auto Ellipsis - CodeProject_files/AutoEllipsis2.png" width="432"/>
+<p>The <code>TextBoxEllipsis</code> switches to "full text" mode when it gains focus so its content can be edited as usual. It switches back to "ellipsis" mode when it loses focus.</p>
+<h2>Inside the code</h2>
+<h3>Find the Correct Size: The Bisection Method</h3>
+<p>A working ellipse algorithm should find the longest substring that can fit into the control boundaries. The brute force approach would test all substrings by removing characters one by one. The proposed solution uses the bisection method to minimize the number of iterations to get the closest match.</p>
+<p>Bisection example:</p>
+<img alt="Bisection method" border="0" height="205" hspace="0" src="./Auto Ellipsis - CodeProject_files/AutoEllipsis3.png" width="393"/>
+<p>The algorithm uses the <code>TextRenderer.MeasureText</code> method to get the size, in pixels, of the specified text drawn on the specified control (using the control's font). The bisection method is implemented as follows (some code has been removed for clarity):</p>
+<div class="pre-action-link" id="premain16791" style="width:100%;display:block;"><span id="prehide16791" onclick="processCodeBlocks.togglePre(16791);">Hide</span>    <span id="preShrink16791" onclick="processCodeBlocks.shrinkExpand(16791);">Shrink</span> <img id="preimg16791" onclick="processCodeBlocks.shrinkExpand(16791);" src="./Auto Ellipsis - CodeProject_files/arrow-up-16.png" style="height:16px;width:16px"/>    <span onclick="return processCodeBlocks.copyCode(16791);">Copy Code</span></div><pre id="pre16791" lang="cs" processed="true" style="margin-top: 0px;"><span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">readonly</span> <span class="code-keyword">string</span> EllipsisChars = <span class="code-string">"</span><span class="code-string">..."</span>;
+
+<span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">string</span> Compact(<span class="code-keyword">string</span> text, Control ctrl, EllipsisFormat options)
+{
+	<span class="code-keyword">using</span> (Graphics dc = ctrl.CreateGraphics())
+	{
+		Size s = TextRenderer.MeasureText(dc, text, ctrl.Font);
+
+		<span class="code-comment">//</span><span class="code-comment"> control is large enough to display the whole text 
+</span>		<span class="code-keyword">if</span> (s.Width &lt;= ctrl.Width)
+			<span class="code-keyword">return</span> text;
+
+		<span class="code-keyword">int</span> len = <span class="code-digit">0</span>;
+		<span class="code-keyword">int</span> seg = text.Length;
+		<span class="code-keyword">string</span> fit = <span class="code-string">"</span><span class="code-string">"</span>;
+
+		<span class="code-comment">//</span><span class="code-comment"> find the longest string that fits into
+</span>		<span class="code-comment">//</span><span class="code-comment"> the control boundaries using bisection method 
+</span>		<span class="code-keyword">while</span> (seg &gt; <span class="code-digit">1</span>)
+		{
+			seg -= seg / <span class="code-digit">2</span>;
+
+			<span class="code-keyword">int</span> left = len + seg;
+			<span class="code-keyword">int</span> right = text.Length;
+
+			<span class="code-keyword">if</span> (left &gt; right)
+				<span class="code-keyword">continue</span>;
+
+			<span class="code-keyword">if</span> ((EllipsisFormat.Middle &amp; options) == 
+						EllipsisFormat.Middle)
+			{
+				right -= left / <span class="code-digit">2</span>;
+				left -= left / <span class="code-digit">2</span>;
+			}
+			<span class="code-keyword">else</span> <span class="code-keyword">if</span> ((EllipsisFormat.Start &amp; options) != <span class="code-digit">0</span>)
+			{
+				right -= left;
+				left = <span class="code-digit">0</span>;
+			}
+
+			<span class="code-comment">//</span><span class="code-comment"> build and measure a candidate string with ellipsis
+</span>			<span class="code-keyword">string</span> tst = text.Substring(<span class="code-digit">0</span>, left) + 
+				EllipsisChars + text.Substring(right);
+			
+			s = TextRenderer.MeasureText(dc, tst, ctrl.Font);
+
+			<span class="code-comment">//</span><span class="code-comment"> candidate string fits into control boundaries, 
+</span>			<span class="code-comment">//</span><span class="code-comment"> try a longer string
+</span>			<span class="code-comment">//</span><span class="code-comment"> stop when seg &lt;= 1 
+</span>			<span class="code-keyword">if</span> (s.Width &lt;= ctrl.Width)
+			{
+				len += seg;
+				fit = tst;
+			}
+		}
+
+		<span class="code-keyword">if</span> (len == <span class="code-digit">0</span>) <span class="code-comment">//</span><span class="code-comment"> string can't fit into control
+</span>		{
+			<span class="code-keyword">return</span> EllipsisChars;
+		}
+		<span class="code-keyword">return</span> fit;
+	}
+}</pre>
+<p>The <code>Compact</code> method in action:</p>
+<img alt="Ellipsis algorithm" border="0" height="229" hspace="0" src="./Auto Ellipsis - CodeProject_files/AutoEllipsis4.png" width="279"/>
+<h3>Trim at a Word Boundary using Regular Expressions</h3>
+<p>The .NET Framework allows to trim text at a word boundary. We implement it by adjusting the substring bounds with regular expressions:</p>
+<ul>
+<li><code><span class="code-string">"</span><span class="code-string">\w*\W*"</span></code> matches a word followed by whitespaces</li>
+<li><code><span class="code-string">"</span><span class="code-string">\W*\w*$"</span></code> matches whitespaces followed by a word at the end of the <code><span class="code-SDKkeyword">string</span></code></li>
+</ul>
+<p>These matches are subtracted from the substring (according to ellipsis alignment) in order to round up text at a word boundary.</p>
+<div class="pre-action-link" id="premain384234" style="width:100%;display:block;"><span id="prehide384234" onclick="processCodeBlocks.togglePre(384234);">Hide</span>    <span id="preShrink384234" onclick="processCodeBlocks.shrinkExpand(384234);">Shrink</span> <img id="preimg384234" onclick="processCodeBlocks.shrinkExpand(384234);" src="./Auto Ellipsis - CodeProject_files/arrow-up-16.png" style="height:16px;width:16px"/>    <span onclick="return processCodeBlocks.copyCode(384234);">Copy Code</span></div><pre id="pre384234" lang="cs" processed="true" style="margin-top: 0px;"><strong><span class="code-keyword">private</span> <span class="code-keyword">static</span> Regex prevWord = <span class="code-keyword">new</span> Regex(<span class="code-string">@"</span><span class="code-string">\W*\w*$"</span>);
+<span class="code-keyword">private</span> <span class="code-keyword">static</span> Regex nextWord = <span class="code-keyword">new</span> Regex(<span class="code-string">@"</span><span class="code-string">\w*\W*"</span>);
+</strong>
+<span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">string</span> Compact(<span class="code-keyword">string</span> text, Control ctrl, EllipsisFormat options)
+{
+	<span class="code-keyword">using</span> (Graphics dc = ctrl.CreateGraphics())
+	{
+		<strong>[..] </strong>
+
+		<span class="code-keyword">int</span> len = <span class="code-digit">0</span>;
+		<span class="code-keyword">int</span> seg = text.Length;
+		<span class="code-keyword">string</span> fit = <span class="code-string">"</span><span class="code-string">"</span>;
+
+		<span class="code-comment">//</span><span class="code-comment"> find the longest string that fits into
+</span>		<span class="code-comment">//</span><span class="code-comment"> the control boundaries using bisection method 
+</span>		<span class="code-keyword">while</span> (seg &gt; <span class="code-digit">1</span>)
+		{
+			seg -= seg / <span class="code-digit">2</span>;
+
+			<span class="code-keyword">int</span> left = len + seg;
+			<span class="code-keyword">int</span> right = text.Length;
+
+			<strong>[..]
+
+			<span class="code-comment">//</span><span class="code-comment"> trim at a word boundary using regular expressions 
+</span>			<span class="code-keyword">if</span> ((EllipsisFormat.Word &amp; options) != <span class="code-digit">0</span>)
+			{
+				<span class="code-keyword">if</span> ((EllipsisFormat.End &amp; options) != <span class="code-digit">0</span>)
+				{
+					left -= prevWord.Match(text, 
+							<span class="code-digit">0</span>, left).Length;
+				}
+				<span class="code-keyword">if</span> ((EllipsisFormat.Start &amp; options) != <span class="code-digit">0</span>)
+				{
+					right += nextWord.Match(text, 
+							right).Length;
+				}
+			}</strong>
+			
+			<span class="code-comment">//</span><span class="code-comment"> build and measure a candidate string with ellipsis
+</span>			<span class="code-keyword">string</span> tst = text.Substring(<span class="code-digit">0</span>, left) + 
+				EllipsisChars + text.Substring(right);
+			
+			s = TextRenderer.MeasureText(dc, tst, ctrl.Font);
+
+			<span class="code-comment">//</span><span class="code-comment"> candidate string fits into control boundaries, 
+</span>			<span class="code-comment">//</span><span class="code-comment"> try a longer string
+</span>			<span class="code-comment">//</span><span class="code-comment"> stop when seg &lt;= 1 
+</span>			<span class="code-keyword">if</span> (s.Width &lt;= ctrl.Width)
+			{
+				len += seg;
+				fit = tst;
+			}
+		}
+
+		<span class="code-keyword">if</span> (len == <span class="code-digit">0</span>) <span class="code-comment">//</span><span class="code-comment"> string can't fit into control
+</span>		{
+			<span class="code-keyword">return</span> EllipsisChars;
+		}
+		<span class="code-keyword">return</span> fit;
+	}
+}</pre>
+<p>Example of text trimmed at a word boundary:</p>
+<img alt="Trim at a word boundary" border="0" height="95" hspace="0" src="./Auto Ellipsis - CodeProject_files/AutoEllipsis5.PNG" width="345"/>
+<h3>Trim a Path String</h3>
+<p>The "path" mode is a feature where the specified text is handled as a file path. The algorithm preserves as much as possible of the drive and filename information:</p>
+<ol>
+<li><em>c:\directory1\dir...\filename.ext</em></li>
+<li><em>c:\...\filename.ext</em></li>
+<li><em>...\filename.ext</em> (this is the shortest possible path, filename and extension are not truncated).</li>
+</ol>
+<div class="pre-action-link" id="premain967469" style="width:100%;display:block;"><span id="prehide967469" onclick="processCodeBlocks.togglePre(967469);">Hide</span>    <span id="preShrink967469" onclick="processCodeBlocks.shrinkExpand(967469);">Shrink</span> <img id="preimg967469" onclick="processCodeBlocks.shrinkExpand(967469);" src="./Auto Ellipsis - CodeProject_files/arrow-up-16.png" style="height:16px;width:16px"/>    <span onclick="return processCodeBlocks.copyCode(967469);">Copy Code</span></div><pre id="pre967469" lang="cs" processed="true" style="margin-top: 0px;"><span class="code-keyword">public</span> <span class="code-keyword">static</span> <span class="code-keyword">string</span> Compact(<span class="code-keyword">string</span> text, Control ctrl, EllipsisFormat options)
+{
+	<span class="code-keyword">using</span> (Graphics dc = ctrl.CreateGraphics())
+	{
+		<strong>[..]
+		
+		<span class="code-keyword">string</span> pre = <span class="code-string">"</span><span class="code-string">"</span>;
+		<span class="code-keyword">string</span> mid = text;
+		<span class="code-keyword">string</span> post = <span class="code-string">"</span><span class="code-string">"</span>;
+
+		<span class="code-keyword">bool</span> isPath = (EllipsisFormat.Path &amp; options) != <span class="code-digit">0</span>;
+
+		<span class="code-comment">//</span><span class="code-comment"> split path string into &lt;drive&gt;&lt;directory&gt;&lt;filename&gt; 
+</span>		<span class="code-keyword">if</span> (isPath)
+		{
+			pre = Path.GetPathRoot(text);
+			mid = Path.GetDirectoryName(text).Substring(pre.Length);
+			post = Path.GetFileName(text);
+		}
+</strong>
+		<span class="code-keyword">int</span> len = <span class="code-digit">0</span>;
+		<span class="code-keyword">int</span> seg = mid.Length;
+		<span class="code-keyword">string</span> fit = <span class="code-string">"</span><span class="code-string">"</span>;
+
+		<span class="code-comment">//</span><span class="code-comment"> find the longest string that fits into
+</span>		<span class="code-comment">//</span><span class="code-comment"> the control boundaries using bisection method
+</span>		<span class="code-keyword">while</span> (seg &gt; <span class="code-digit">1</span>)
+		{
+			seg -= seg / <span class="code-digit">2</span>;
+
+			<span class="code-keyword">int</span> left = len + seg;
+			<span class="code-keyword">int</span> right = mid.Length;
+
+			<strong>[..] </strong>
+
+			<span class="code-comment">//</span><span class="code-comment"> build and measure a candidate string with ellipsis
+</span>			<span class="code-keyword">string</span> tst = mid.Substring(<span class="code-digit">0</span>, left) + 
+				EllipsisChars + mid.Substring(right);
+<strong>
+			<span class="code-comment">//</span><span class="code-comment"> restore path with &lt;drive&gt; and &lt;filename&gt;
+</span>			<span class="code-keyword">if</span> (isPath)
+			{
+				tst = Path.Combine(Path.Combine(pre, tst), post);
+			}
+</strong>			s = TextRenderer.MeasureText(dc, tst, ctrl.Font);
+
+			<span class="code-comment">//</span><span class="code-comment"> candidate string fits into control boundaries, 
+</span>			<span class="code-comment">//</span><span class="code-comment"> try a longer string 
+</span>			<span class="code-comment">//</span><span class="code-comment"> stop when seg &lt;= 1 
+</span>			<span class="code-keyword">if</span> (s.Width &lt;= ctrl.Width)
+			{
+				len += seg;
+				fit = tst;
+			}
+		}
+
+		<span class="code-keyword">if</span> (len == <span class="code-digit">0</span>) <span class="code-comment">//</span><span class="code-comment"> string can't fit into control
+</span>		{ 
+<strong>			<span class="code-comment">//</span><span class="code-comment"> "path" mode is off, just return ellipsis characters
+</span>			<span class="code-keyword">if</span> (!isPath)
+				<span class="code-keyword">return</span> EllipsisChars;
+
+			<span class="code-comment">//</span><span class="code-comment"> &lt;drive&gt; and &lt;directory&gt; are empty, return &lt;filename&gt;
+</span>			<span class="code-keyword">if</span> (pre.Length == <span class="code-digit">0</span> &amp;&amp; mid.Length == <span class="code-digit">0</span>)
+				<span class="code-keyword">return</span> post;
+
+			<span class="code-comment">//</span><span class="code-comment"> measure "C:\...\filename.ext"
+</span>			fit = Path.Combine(Path.Combine(pre, EllipsisChars), post);
+			
+			s = TextRenderer.MeasureText(dc, fit, ctrl.Font);
+
+			<span class="code-comment">//</span><span class="code-comment"> if still not fit then return "...\filename.ext"
+</span>			<span class="code-keyword">if</span> (s.Width &gt; ctrl.Width)
+				fit = Path.Combine(EllipsisChars, post);
+</strong>		}
+		<span class="code-keyword">return</span> fit;
+	}
+}</pre>
+<h2>History</h2>
+<ul>
+<li>June 20, 2009 - Original article</li>
+</ul>
+</div>
+</main>
+<footer>
+  Reconstructed archival HTML generated 2026-10-03.
+  The live codeproject.com domain is no longer serving the historical article.
+</footer>
+</body>
+</html>
